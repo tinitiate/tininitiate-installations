@@ -1,3 +1,7 @@
+# Get Windows version
+$windowsVersion = [Environment]::OSVersion.Version
+Write-Host "Windows version: $($windowsVersion.Major).$($windowsVersion.Minor).$($windowsVersion.Build)"
+
 # Check if Chocolatey is installed (if not, install it)
 if (!(Get-Command choco -ErrorAction SilentlyContinue)) {
     # Install Chocolatey
@@ -18,28 +22,36 @@ if (!(Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "Mi
 }
 
 # Install Virtual Machine Platform (if not already installed)
-if (!(Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "VirtualMachinePlatform" })) {
+if ($windowsVersion.Major -ge 10 -and $windowsVersion.BuildNumber -ge 19041 -and !(Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "VirtualMachinePlatform" })) {
     # Enable Virtual Machine Platform
     dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
     Write-Host "Virtual Machine Platform enabled."
 } else {
-    Write-Host "Virtual Machine Platform already enabled."
+    Write-Host "Virtual Machine Platform already enabled or not supported on this version of Windows."
 }
 
 # Download and install WSL2 Linux kernel update package (if not already installed)
 if (!(wsl -l -v) -match "2") {
-    # Install the WSL2 Linux kernel update package
-    wsl --set-default-version 2
-    Write-Host "WSL2 installed."
+    if ($windowsVersion.Major -ge 10 -and $windowsVersion.BuildNumber -ge 19041) {
+        # Install the WSL2 Linux kernel update package
+        wsl --set-default-version 2
+        Write-Host "WSL2 installed."
+    } else {
+        Write-Host "WSL2 not supported on this version of Windows."
+    }
 } else {
     Write-Host "WSL2 already installed."
 }
 
 # Install Docker (if not already installed)
 if (!(Get-Command docker -ErrorAction SilentlyContinue)) {
-    # Install Docker Desktop
-    choco install docker-desktop -y
-    Write-Host "Docker installed."
+    if ($windowsVersion.Major -ge 10 -and $windowsVersion.BuildNumber -ge 18362) {
+        # Install Docker Desktop
+        choco install docker-desktop -y
+        Write-Host "Docker installed."
+    } else {
+        Write-Host "Docker not supported on this version of Windows."
+    }
 } else {
     Write-Host "Docker already installed."
 }

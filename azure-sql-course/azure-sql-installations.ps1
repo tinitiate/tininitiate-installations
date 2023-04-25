@@ -70,4 +70,3 @@ if (!(Test-Path "C:\Program Files\Notepad++\notepad++.exe")) {
 } else {
     Write-Host "Notepad++ is already installed."
 }
-

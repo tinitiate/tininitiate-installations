@@ -27,7 +27,11 @@ if ($windowsVersion.Major -ge 10 -and $windowsVersion.BuildNumber -ge 19041 -and
     dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
     Write-Host "Virtual Machine Platform enabled."
 } else {
-    Write-Host "Virtual Machine Platform already enabled or not supported on this version of Windows."
+    if ($windowsVersion.Major -ge 10 -and $windowsVersion.BuildNumber -ge 19041) {
+        Write-Host "Virtual Machine Platform already enabled."
+    } else {
+        Write-Host "Virtual Machine Platform is not supported on this version of Windows."
+    }
 }
 
 # Download and install WSL2 Linux kernel update package (if not already installed)

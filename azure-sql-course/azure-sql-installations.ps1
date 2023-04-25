@@ -27,7 +27,7 @@ if (!(Get-WindowsOptionalFeature -Online | Where-Object { $_.FeatureName -eq "Vi
 }
 
 # Download and install WSL2 Linux kernel update package (if not already installed)
-if (!(wsl -l -v) -match "2")) {
+if (!(wsl -l -v) -match "2") {
     # Install the WSL2 Linux kernel update package
     wsl --set-default-version 2
     Write-Host "WSL2 installed."
